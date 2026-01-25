@@ -3,14 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	_ "go-cashier-api/docs"
 	"go-cashier-api/internal/delivery/http"
 	"go-cashier-api/internal/repository"
 	"go-cashier-api/internal/usecase"
 	netHttp "net/http"
 	"os"
-
-	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func corsMiddleware(next netHttp.Handler) netHttp.Handler {
@@ -40,8 +37,6 @@ func main() {
 	productHandler.RegisterRoutes()
 	categoryHandler.RegisterRoutes()
 
-	netHttp.HandleFunc("/swagger/", httpSwagger.WrapHandler)
-
 	netHttp.HandleFunc("/health", func(w netHttp.ResponseWriter, r *netHttp.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]string{
@@ -55,10 +50,9 @@ func main() {
 		port = "8080"
 	}
 
-	fmt.Printf("Server running on 0.0.0.0:%s\n", port)
+	fmt.Println("Server running di localhost:8080")
 
-	handler := corsMiddleware(netHttp.DefaultServeMux)
-	err := netHttp.ListenAndServe("0.0.0.0:"+port, handler)
+	err := netHttp.ListenAndServe(":8080", nil)
 	if err != nil {
 		fmt.Println("gagal running server")
 	}
