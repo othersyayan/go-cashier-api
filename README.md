@@ -45,23 +45,23 @@ go-cashier-api/
 
 ### Products
 
-| Method   | Endpoint             | Description          | Body (JSON)                                            |
-| :------- | :------------------- | :------------------- | :----------------------------------------------------- |
-| `GET`    | `/api/products`      | Get all products     | -                                                      |
-| `POST`   | `/api/products`      | Create a new product | `{"name": "...", "price": 1000, "stock": 10}`          |
-| `GET`    | `/api/products/{id}` | Get a product by ID  | -                                                      |
-| `PUT`    | `/api/products/{id}` | Update a product     | `{"id": 1, "name": "...", "price": 1000, "stock": 10}` |
-| `DELETE` | `/api/products/{id}` | Delete a product     | -                                                      |
+| Method   | Endpoint             | Description          |
+| :------- | :------------------- | :------------------- |
+| `GET`    | `/api/products`      | Get all products     |
+| `POST`   | `/api/products`      | Create a new product |
+| `GET`    | `/api/products/{id}` | Get a product by ID  |
+| `PUT`    | `/api/products/{id}` | Update a product     |
+| `DELETE` | `/api/products/{id}` | Delete a product     |
 
 ### Categories
 
-| Method   | Endpoint               | Description           | Body (JSON)                                      |
-| :------- | :--------------------- | :-------------------- | :----------------------------------------------- |
-| `GET`    | `/api/categories`      | Get all categories    | -                                                |
-| `POST`   | `/api/categories`      | Create a new category | `{"name": "...", "description": "..."}`          |
-| `GET`    | `/api/categories/{id}` | Get a category by ID  | -                                                |
-| `PUT`    | `/api/categories/{id}` | Update a category     | `{"id": 1, "name": "...", "description": "..."}` |
-| `DELETE` | `/api/categories/{id}` | Delete a category     | -                                                |
+| Method   | Endpoint               | Description           |
+| :------- | :--------------------- | :-------------------- |
+| `GET`    | `/api/categories`      | Get all categories    |
+| `POST`   | `/api/categories`      | Create a new category |
+| `GET`    | `/api/categories/{id}` | Get a category by ID  |
+| `PUT`    | `/api/categories/{id}` | Update a category     |
+| `DELETE` | `/api/categories/{id}` | Delete a category     |
 
 ### Health Check
 
