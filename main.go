@@ -3,10 +3,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	_ "go-cashier-api/docs"
 	"go-cashier-api/internal/delivery/http"
 	"go-cashier-api/internal/repository"
 	"go-cashier-api/internal/usecase"
 	netHttp "net/http"
+
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func main() {
@@ -20,6 +23,8 @@ func main() {
 
 	productHandler.RegisterRoutes()
 	categoryHandler.RegisterRoutes()
+
+	netHttp.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
 	netHttp.HandleFunc("/health", func(w netHttp.ResponseWriter, r *netHttp.Request) {
 		w.Header().Set("Content-Type", "application/json")
