@@ -55,10 +55,10 @@ func main() {
 		port = "8080"
 	}
 
-	fmt.Printf("Server running on port %s\n", port)
+	fmt.Printf("Server running on 0.0.0.0:%s\n", port)
 
 	handler := corsMiddleware(netHttp.DefaultServeMux)
-	err := netHttp.ListenAndServe(":"+port, handler)
+	err := netHttp.ListenAndServe("0.0.0.0:"+port, handler)
 	if err != nil {
 		fmt.Println("gagal running server")
 	}
