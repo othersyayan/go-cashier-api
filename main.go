@@ -14,7 +14,12 @@ func main() {
 	productUsecase := usecase.NewProductUsecase(repo)
 	productHandler := http.NewProductHandler(productUsecase)
 
+	categoryRepo := repository.NewInMemoryCategoryRepository()
+	categoryUsecase := usecase.NewCategoryUsecase(categoryRepo)
+	categoryHandler := http.NewCategoryHandler(categoryUsecase)
+
 	productHandler.RegisterRoutes()
+	categoryHandler.RegisterRoutes()
 
 	netHttp.HandleFunc("/health", func(w netHttp.ResponseWriter, r *netHttp.Request) {
 		w.Header().Set("Content-Type", "application/json")
