@@ -69,17 +69,34 @@ func (repo *CategoryRepository) Update(category *models.Category) error {
 }
 
 func (repo *CategoryRepository) Delete(id string) error {
-	query := "DELETE FROM categories WHERE id = $1"
-	result, err := repo.db.Exec(query, id)
+	tx, err := repo.db.Begin()
 	if err != nil {
 		return err
 	}
+
+	_, err = tx.Exec("DELETE FROM products WHERE category_id = $1", id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	query := "DELETE FROM categories WHERE id = $1"
+	result, err := tx.Exec(query, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
 	rows, err := result.RowsAffected()
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
+
 	if rows == 0 {
+		tx.Rollback()
 		return errors.New("kategori tidak ditemukan")
 	}
-	return nil
+
+	return tx.Commit()
 }

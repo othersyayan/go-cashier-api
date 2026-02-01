@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	netHttp "net/http"
 	"os"
 	"strings"
@@ -40,6 +41,8 @@ func main() {
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
+	mux := http.NewServeMux()
+
 	if _, err := os.Stat(".env"); err == nil {
 		viper.SetConfigFile(".env")
 		_ = viper.ReadInConfig()
@@ -65,7 +68,7 @@ func main() {
 	categoryService := services.NewCategoryService(categoryRepo)
 	categoryHandler := handlers.NewCategoryHandler(categoryService)
 
-	netHttp.HandleFunc("/health", func(w netHttp.ResponseWriter, r *netHttp.Request) {
+	mux.HandleFunc("/health", func(w netHttp.ResponseWriter, r *netHttp.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]string{
 			"status":  "OK",
@@ -73,15 +76,17 @@ func main() {
 		})
 	})
 
-	netHttp.HandleFunc("/api/products", productHandler.HandleProducts)
-	netHttp.HandleFunc("/api/products/", productHandler.HandleProductByID)
+	mux.HandleFunc("/api/products", productHandler.HandleProducts)
+	mux.HandleFunc("/api/products/", productHandler.HandleProductByID)
 
-	netHttp.HandleFunc("/api/categories", categoryHandler.HandleCategories)
-	netHttp.HandleFunc("/api/categories/", categoryHandler.HandleCategoryByID)
+	mux.HandleFunc("/api/categories", categoryHandler.HandleCategories)
+	mux.HandleFunc("/api/categories/", categoryHandler.HandleCategoryByID)
+
+	handler := corsMiddleware(mux)
 
 	fmt.Println("Server running di localhost:" + config.Port)
 
-	err := netHttp.ListenAndServe(":"+config.Port, nil)
+	err := netHttp.ListenAndServe(":"+config.Port, handler)
 	if err != nil {
 		fmt.Println("gagal running server")
 	}
