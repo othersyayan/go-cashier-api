@@ -61,6 +61,10 @@ func main() {
 	productService := services.NewProductService(productRepo)
 	productHandler := handlers.NewProductHandler(productService)
 
+	categoryRepo := repositories.NewCategoryRepository(db)
+	categoryService := services.NewCategoryService(categoryRepo)
+	categoryHandler := handlers.NewCategoryHandler(categoryService)
+
 	netHttp.HandleFunc("/health", func(w netHttp.ResponseWriter, r *netHttp.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]string{
@@ -71,6 +75,9 @@ func main() {
 
 	netHttp.HandleFunc("/api/products", productHandler.HandleProducts)
 	netHttp.HandleFunc("/api/products/", productHandler.HandleProductByID)
+
+	netHttp.HandleFunc("/api/categories", categoryHandler.HandleCategories)
+	netHttp.HandleFunc("/api/categories/", categoryHandler.HandleCategoryByID)
 
 	fmt.Println("Server running di localhost:" + config.Port)
 

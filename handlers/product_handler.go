@@ -5,7 +5,6 @@ import (
 	"go-cashier-api/models"
 	"go-cashier-api/services"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -47,7 +46,13 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if product.CategoryID == "" {
+		http.Error(w, "Category ID is required", http.StatusBadRequest)
+		return
+	}
+
 	err = h.service.CreateProduct(&product)
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -72,13 +77,8 @@ func (h *ProductHandler) HandleProductByID(w http.ResponseWriter, r *http.Reques
 }
 
 func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/api/products/")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "Invalid product ID", http.StatusBadRequest)
-		return
-	}
-
+	id := strings.TrimPrefix(r.URL.Path, "/api/products/")
+	
 	product, err := h.service.GetProductByID(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -90,17 +90,17 @@ func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) 
 }
 
 func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/api/products/")
-	id, err := strconv.Atoi(idStr)
+	id := strings.TrimPrefix(r.URL.Path, "/api/products/")
+	
+	var product models.Product
+	err := json.NewDecoder(r.Body).Decode(&product)
 	if err != nil {
-		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	var product models.Product
-	err = json.NewDecoder(r.Body).Decode(&product)
-	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+	if product.CategoryID == "" {
+		http.Error(w, "Category ID is required", http.StatusBadRequest)
 		return
 	}
 
@@ -116,14 +116,9 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/api/products/")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "Invalid product ID", http.StatusBadRequest)
-		return
-	}
-
-	err = h.service.DeleteProduct(id)
+	id := strings.TrimPrefix(r.URL.Path, "/api/products/")
+	
+	err := h.service.DeleteProduct(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
