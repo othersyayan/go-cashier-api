@@ -6,29 +6,29 @@ import (
 )
 
 type ProductService struct {
-	repository *repositories.ProductRepository
+	repo *repositories.ProductRepository
 }
 
-func NewProductService(repository *repositories.ProductRepository) *ProductService {
-	return &ProductService{repository: repository}
+func NewProductService(repo *repositories.ProductRepository) *ProductService {
+	return &ProductService{repo: repo}
 }
 
 func (s *ProductService) CreateProduct(product *models.Product) error {
-	return s.repository.Create(product)
+	return s.repo.Create(product)
 }
 
 func (s *ProductService) GetAllProducts() ([]models.Product, error) {
-	return s.repository.GetAll()
+	return s.repo.GetAll()
 }
 
 func (s *ProductService) GetProductByID(id int) (*models.Product, error) {
-	return s.repository.FindByID(id)
+	return s.repo.GetByID(id)
 }
 
 func (s *ProductService) UpdateProduct(product *models.Product) error {
-	return s.repository.Update(product)
+	return s.repo.Update(product)
 }
 
 func (s *ProductService) DeleteProduct(id int) error {
-	return s.repository.Delete(id)
+	return s.repo.Delete(id)
 }

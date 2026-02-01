@@ -70,6 +70,7 @@ func main() {
 	})
 
 	netHttp.HandleFunc("/api/products", productHandler.HandleProducts)
+	netHttp.HandleFunc("/api/products/", productHandler.HandleProductByID)
 
 	fmt.Println("Server running di localhost:" + config.Port)
 

@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql"
+	"errors"
 	"go-cashier-api/models"
 )
 
@@ -34,12 +35,14 @@ func (repo *ProductRepository) GetAll() ([]models.Product, error) {
 	return products, nil
 }
 
-func (repo *ProductRepository) FindByID(id int) (*models.Product, error) {
+func (repo *ProductRepository) GetByID(id int) (*models.Product, error) {
 	query := "SELECT id, name, price, stock FROM products WHERE id = $1"
-	row := repo.db.QueryRow(query, id)
 
 	var p models.Product
-	err := row.Scan(&p.ID, &p.Name, &p.Price, &p.Stock)
+	err := repo.db.QueryRow(query, id).Scan(&p.ID, &p.Name, &p.Price, &p.Stock)
+	if err == sql.ErrNoRows {
+		return nil, errors.New("produk tidak ditemukan")
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -55,12 +58,37 @@ func (repo *ProductRepository) Create(product *models.Product) error {
 
 func (repo *ProductRepository) Update(product *models.Product) error {
 	query := "UPDATE products SET name = $1, price = $2, stock = $3 WHERE id = $4"
-	_, err := repo.db.Exec(query, product.Name, product.Price, product.Stock, product.ID)
-	return err
+	result, err := repo.db.Exec(query, product.Name, product.Price, product.Stock, product.ID)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return errors.New("produk tidak ditemukan")
+	}
+
+	return nil
 }
 
 func (repo *ProductRepository) Delete(id int) error {
 	query := "DELETE FROM products WHERE id = $1"
-	_, err := repo.db.Exec(query, id)
+	result, err := repo.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return errors.New("produk tidak ditemukan")
+	}
+
 	return err
 }
