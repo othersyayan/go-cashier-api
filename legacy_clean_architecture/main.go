@@ -3,20 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	"go-cashier-api/internal/delivery/http"
+	"go-cashier-api/internal/repository"
+	"go-cashier-api/internal/usecase"
 	netHttp "net/http"
 	"os"
-	"strings"
-
-	"go-cashier-api/database"
-
-	"github.com/spf13/viper"
 )
-
-type Config struct {
-	Port     string `mapstructure:"PORT"`
-	Database string `mapstructure:"DATABASE"`
-}
 
 func corsMiddleware(next netHttp.Handler) netHttp.Handler {
 	return netHttp.HandlerFunc(func(w netHttp.ResponseWriter, r *netHttp.Request) {
@@ -34,25 +26,16 @@ func corsMiddleware(next netHttp.Handler) netHttp.Handler {
 }
 
 func main() {
-	viper.AutomaticEnv()
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	repo := repository.NewInMemoryProductRepository()
+	productUsecase := usecase.NewProductUsecase(repo)
+	productHandler := http.NewProductHandler(productUsecase)
 
-	if _, err := os.Stat(".env"); err == nil {
-		viper.SetConfigFile(".env")
-		_ = viper.ReadInConfig()
-	}
+	categoryRepo := repository.NewInMemoryCategoryRepository()
+	categoryUsecase := usecase.NewCategoryUsecase(categoryRepo)
+	categoryHandler := http.NewCategoryHandler(categoryUsecase)
 
-	config := Config{
-		Port:     viper.GetString("PORT"),
-		Database: viper.GetString("DATABASE"),
-	}
-
-	db, errDB := database.Connect(config.Database)
-	if errDB != nil {
-		log.Fatal("Failed to initialize database:", errDB)
-	}
-
-	defer db.Close()
+	productHandler.RegisterRoutes()
+	categoryHandler.RegisterRoutes()
 
 	netHttp.HandleFunc("/health", func(w netHttp.ResponseWriter, r *netHttp.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -62,9 +45,14 @@ func main() {
 		})
 	})
 
-	fmt.Println("Server running di localhost:" + config.Port)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
-	err := netHttp.ListenAndServe(":"+config.Port, nil)
+	fmt.Println("Server running di localhost:8080")
+
+	err := netHttp.ListenAndServe(":8080", nil)
 	if err != nil {
 		fmt.Println("gagal running server")
 	}
