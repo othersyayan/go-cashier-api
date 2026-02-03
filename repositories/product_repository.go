@@ -80,10 +80,6 @@ func (repo *ProductRepository) GetByID(id string) (*models.Product, error) {
 }
 
 func (repo *ProductRepository) Create(product *models.Product) error {
-	// Supabase/Postgres usually generates UUID if configured as DEFAULT gen_random_uuid(),
-	// but user said they changed ID to UUID. Assuming it generates automatically so we RETURNING id.
-	// If category_id is empty string, we should handle it as NULL.
-
 	var categoryID interface{} = product.CategoryID
 	if product.CategoryID == "" {
 		categoryID = nil
