@@ -72,6 +72,10 @@ func main() {
 	transactionService := services.NewTransactionService(transactionRepo)
 	transactionHandler := handlers.NewTransactionHandler(transactionService)
 
+	reportRepo := repositories.NewReportRepository(db)
+	reportService := services.NewReportService(reportRepo)
+	reportHandler := handlers.NewReportHandler(reportService)
+
 	mux.HandleFunc("/health", func(w netHttp.ResponseWriter, r *netHttp.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]string{
@@ -87,6 +91,9 @@ func main() {
 	mux.HandleFunc("/api/categories/", categoryHandler.HandleCategoryByID)
 
 	mux.HandleFunc("/api/transactions/checkout", transactionHandler.HandleTransactions)
+
+	mux.HandleFunc("/api/report/today", reportHandler.HandleTodayReport)
+	mux.HandleFunc("/api/report", reportHandler.HandleReport)
 
 	handler := corsMiddleware(mux)
 
