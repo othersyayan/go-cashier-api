@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"go-cashier-api/models"
-	"go-cashier-api/services"
 	"net/http"
 	"strings"
+
+	"go-cashier-api/models"
+	"go-cashier-api/services"
 )
 
 type ProductHandler struct {
@@ -28,7 +29,8 @@ func (h *ProductHandler) HandleProducts(w http.ResponseWriter, r *http.Request) 
 }
 
 func (h *ProductHandler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
-	products, err := h.service.GetAllProducts()
+	name := r.URL.Query().Get("name")
+	products, err := h.service.GetAllProducts(name)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -52,7 +54,6 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.service.CreateProduct(&product)
-
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -78,7 +79,7 @@ func (h *ProductHandler) HandleProductByID(w http.ResponseWriter, r *http.Reques
 
 func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/api/products/")
-	
+
 	product, err := h.service.GetProductByID(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -91,7 +92,7 @@ func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) 
 
 func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/api/products/")
-	
+
 	var product models.Product
 	err := json.NewDecoder(r.Body).Decode(&product)
 	if err != nil {
@@ -117,7 +118,7 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 
 func (h *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/api/products/")
-	
+
 	err := h.service.DeleteProduct(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
