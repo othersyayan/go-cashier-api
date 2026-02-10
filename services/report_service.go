@@ -20,6 +20,6 @@ func (s *ReportService) GetTodayReport() (*models.SalesReport, error) {
 	return s.repo.GetSalesReport(today, today)
 }
 
-func (s *ReportService) GetReportByRange(startDate, endDate string) (*models.SalesReport, error) {
-	return s.repo.GetSalesReport(startDate, endDate)
+func (s *ReportService) GetReportByRange(startDate, endDate string) (*models.TransactionReport, error) {
+	return s.repo.GetDetailedReport(startDate, endDate)
 }
