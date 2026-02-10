@@ -16,6 +16,9 @@ handlers.
 - **Resource Management**:
   - **Products**: Manage inventory with price and stock.
   - **Categories**: Organize products into categories.
+  - **Transactions**: Process checkouts and track sales.
+  - **Reports**: Generate daily and date-range sales reports with detailed
+    transaction data.
 - **UUIDs**: Uses UUID string identifiers for all resources.
 - **Validation**: Ensures integrity (e.g. required Category ID for products).
 
@@ -75,6 +78,19 @@ DATABASE_URL=postgres://user:password@host:port/dbname?sslmode=require
 | `GET`    | `/api/categories/{id}` | Get a category by ID  |
 | `PUT`    | `/api/categories/{id}` | Update a category     |
 | `DELETE` | `/api/categories/{id}` | Delete a category     |
+
+### Transactions
+
+| Method | Endpoint                     | Description      |
+| :----- | :--------------------------- | :--------------- |
+| `POST` | `/api/transactions/checkout` | Process checkout |
+
+### Reports
+
+| Method | Endpoint            | Description                                             |
+| :----- | :------------------ | :------------------------------------------------------ |
+| `GET`  | `/api/report/today` | Get today's sales summary                               |
+| `GET`  | `/api/report`       | Get detailed report by range (`start_date`, `end_date`) |
 
 ### Health Check
 
